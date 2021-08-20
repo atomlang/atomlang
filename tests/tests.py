@@ -6,22 +6,22 @@ THIS_PATH = abspath(dirname(__file__))
 
 TEST_SUITE = {
   "Unit Tests": (
-    "lang/basics.pk",
-    "lang/class.pk",
-    "lang/core.pk",
-    "lang/controlflow.pk",
-    "lang/fibers.pk",
-    "lang/functions.pk",
-    "lang/import.pk",
+    "lang/basicsatml",
+    "lang/classatml",
+    "lang/coreatml",
+    "lang/controlflowatml",
+    "lang/fibersatml",
+    "lang/functionsatml",
+    "lang/importatml",
   ),
 
   "Examples": (
-    "examples/brainfuck.pk",
-    "examples/fib.pk",
-    "examples/fizzbuzz.pk",
-    "examples/helloworld.pk",
-    "examples/pi.pk",
-    "examples/prime.pk",
+    "examples/brainfuckatml",
+    "examples/fibatml",
+    "examples/fizzbuzzatml",
+    "examples/helloworldatml",
+    "examples/piatml",
+    "examples/primeatml",
   ),
 }
 

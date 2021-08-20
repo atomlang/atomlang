@@ -13,11 +13,11 @@ def to_tolevel_path(path):
   return relpath(path, join(THIS_PATH, '..'))
 
 HASH_CHECK_LIST = [
-  "../src/pk_core.c",
-  "../src/pk_var.c",
+  "../src/atml_core.c",
+  "../src/atml_var.c",
 ]
 
-CHECK_EXTENTIONS = ('.c', '.h', '.py', '.pk', '.js')
+CHECK_EXTENTIONS = ('.c', '.h', '.py', '.atml', '.js')
 
 ALLOW_LONG = ('http://', 'https://', '<script ', '<link ')
 
@@ -30,7 +30,7 @@ SOURCE_DIRS = [
 ]
 
 COMMON_HEADERS = [
-  "../src/pk_common.h",
+  "../src/atml_common.h",
   "../cli/common.h",
 ]
 
