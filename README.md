@@ -1,11 +1,11 @@
 # atomlang
 Official Atom Language Repo
 
-<p align="center">
-<img src="" width="200px">
-</p>
+[![forthebadge](https://forthebadge.com/images/badges/made-with-c.svg)](https://forthebadge.com)
 
-[![forthebadge](https://forthebadge.com/images/badges/made-with-c-plus-plus.svg)](https://forthebadge.com)
+<p align="center">
+<img src="https://raw.githubusercontent.com/atomlang/atomlang/master/pics/atomlang.jpeg" width="200px">
+</p>
 
 
 - A Programming Language Built In C
