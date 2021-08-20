@@ -1,3 +1,8 @@
+
+// Note that javascript in Node/chrome (V8) is JIT compiled
+// which makes more faster than other bytecode interpreted
+// VM language listed here.
+
 var start = process.hrtime();
 
 var N = 50000000;
