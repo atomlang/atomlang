@@ -1,0 +1,12 @@
+from math import abs, PI
+
+pi_by_4 = 0; sign = -1
+for i in 1..100000
+	sign    *= -1
+	pi_by_4 += sign * 1/(2*i - 1)
+end
+
+pi = 4 * pi_by_4
+assert(abs(pi - PI) < 0.00002)
+
+print('PI =', pi)
