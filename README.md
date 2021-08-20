@@ -1,6 +1,10 @@
 # atomlang
 Official Atom Language Repo
 
+<p align="center">
+<img src="" width="200px">
+</p>
+
 [![forthebadge](https://forthebadge.com/images/badges/made-with-c-plus-plus.svg)](https://forthebadge.com)
 
 
