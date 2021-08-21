@@ -263,20 +263,20 @@ static void _pathExists(ATMLVM* vm) {
   ATMLReturnBool(vm, pathIsExists(path));
 }
 
-static void _pathIsFile(PKVM* vm) {
+static void _pathIsFile(ATMLVM* vm) {
   const char* path;
-  if (!pkGetArgString(vm, 1, &path, NULL)) return;
-  pkReturnBool(vm, pathIsFileExists(path));
+  if (!ATMLGetArgString(vm, 1, &path, NULL)) return;
+  ATMLReturnBool(vm, pathIsFileExists(path));
 }
 
-static void _pathIsDir(PKVM* vm) {
+static void _pathIsDir(ATMLVM* vm) {
   const char* path;
-  if (!pkGetArgString(vm, 1, &path, NULL)) return;
-  pkReturnBool(vm, pathIsDirectoryExists(path));
+  if (!ATMLGetArgString(vm, 1, &path, NULL)) return;
+  ATMLReturnBool(vm, pathIsDirectoryExists(path));
 }
 
-void registerModulePath(PKVM* vm) {
-  PkHandle* path = pkNewModule(vm, "path");
+void registerModulePath(ATMLVM* vm) {
+  ATMLHandle* path = ATMLNewModule(vm, "path");
 
   ATMLModuleAddFunction(vm, path, "setunix",   _pathSetStyleUnix, 1);
   ATMLModuleAddFunction(vm, path, "getcwd",    _pathGetCWD,       0);
@@ -320,7 +320,7 @@ static void _fileOpen(ATMLVM* vm) {
 
       // TODO: (fmt, ...) va_arg for runtime error public api.
       // If we reached here, that means it's an invalid mode string.
-      pkSetRuntimeError(vm, "Invalid mode string.");
+      ATMLSetRuntimeError(vm, "Invalid mode string.");
       return;
     } while (false);
   }
@@ -334,79 +334,79 @@ static void _fileOpen(ATMLVM* vm) {
     file->mode = mode;
     file->closed = false;
 
-    pkReturnInstNative(vm, (void*)file, OBJ_FILE);
+    ATMLReturnInstNative(vm, (void*)file, OBJ_FILE);
 
   } else {
-    pkReturnNull(vm);
+    ATMLReturnNull(vm);
   }
 }
 
-static void _fileRead(PKVM* vm) {
+static void _fileRead(ATMLVM* vm) {
   File* file;
-  if (!pkGetArgInst(vm, 1, OBJ_FILE, (void**)&file)) return;
+  if (!ATMLGetArgInst(vm, 1, OBJ_FILE, (void**)&file)) return;
 
   if (file->closed) {
-    pkSetRuntimeError(vm, "Cannot read from a closed file.");
+    ATMLSetRuntimeError(vm, "Cannot read from a closed file.");
     return;
   }
 
   if ((file->mode != FMODE_READ) && ((_FMODE_EXT & file->mode) == 0)) {
-    pkSetRuntimeError(vm, "File is not readable.");
+    ATMLSetRuntimeError(vm, "File is not readable.");
     return;
   }
 
   char buff[2048];
   fread((void*)buff, sizeof(char), sizeof(buff), file->fp);
-  pkReturnString(vm, (const char*)buff);
+  ATMLReturnString(vm, (const char*)buff);
 }
 
-static void _fileWrite(PKVM* vm) {
+static void _fileWrite(ATMLVM* vm) {
   File* file;
   const char* text; uint32_t length;
-  if (!pkGetArgInst(vm, 1, OBJ_FILE, (void**)&file)) return;
-  if (!pkGetArgString(vm, 2, &text, &length)) return;
+  if (!ATMLGetArgInst(vm, 1, OBJ_FILE, (void**)&file)) return;
+  if (!ATMLGetArgString(vm, 2, &text, &length)) return;
 
   if (file->closed) {
-    pkSetRuntimeError(vm, "Cannot write to a closed file.");
+    ATMLSetRuntimeError(vm, "Cannot write to a closed file.");
     return;
   }
 
   if ((file->mode != FMODE_WRITE) && ((_FMODE_EXT & file->mode) == 0)) {
-    pkSetRuntimeError(vm, "File is not writable.");
+    ATMLSetRuntimeError(vm, "File is not writable.");
     return;
   }
 
   fwrite(text, sizeof(char), (size_t)length, file->fp);
 }
 
-static void _fileClose(PKVM* vm) {
+static void _fileClose(ATMLVM* vm) {
   File* file;
-  if (!pkGetArgInst(vm, 1, OBJ_FILE, (void**)&file)) return;
+  if (!ATMLGetArgInst(vm, 1, OBJ_FILE, (void**)&file)) return;
 
   if (file->closed) {
-    pkSetRuntimeError(vm, "File already closed.");
+    ATMLSetRuntimeError(vm, "File already closed.");
     return;
   }
 
   if (fclose(file->fp) != 0) {
-    pkSetRuntimeError(vm, "fclose() failed!\n"                     \
+    ATMLSetRuntimeError(vm, "fclose() failed!\n"                     \
                       "  at " __FILE__ ":" STRINGIFY(__LINE__) ".");
   }
   file->closed = true;
 }
 
-void registerModuleFile(PKVM* vm) {
-  PkHandle* file = pkNewModule(vm, "File");
+void registerModuleFile(ATMLVM* vm) {
+  ATMLHandle* file = ATMLNewModule(vm, "File");
 
-  pkModuleAddFunction(vm, file, "open",  _fileOpen, -1);
-  pkModuleAddFunction(vm, file, "read",  _fileRead,  1);
-  pkModuleAddFunction(vm, file, "write", _fileWrite, 2);
-  pkModuleAddFunction(vm, file, "close", _fileClose, 1);
+  ATMLModuleAddFunction(vm, file, "open",  _fileOpen, -1);
+  ATMLModuleAddFunction(vm, file, "read",  _fileRead,  1);
+  ATMLModuleAddFunction(vm, file, "write", _fileWrite, 2);
+  ATMLModuleAddFunction(vm, file, "close", _fileClose, 1);
 
-  pkReleaseHandle(vm, file);
+  ATMLReleaseHandle(vm, file);
 }
 
-void registerModules(PKVM* vm) {
+void registerModules(ATMLVM* vm) {
   registerModuleFile(vm);
   registerModulePath(vm);
 }
