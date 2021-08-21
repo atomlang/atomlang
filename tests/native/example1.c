@@ -1,3 +1,8 @@
+/*
+ *  Copyright (c) 2020-2021 AtomLanguage Developers
+ *  Distributed Under The MIT License
+ */
+
 // includes
 #include <atomlang.h>
 #include <stdio.h>

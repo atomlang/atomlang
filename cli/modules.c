@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2021 Thakee Nathees
+ *  Copyright (c) 2020-2021 AtomLanguage Developers
  *  Distributed Under The MIT License
  */
 

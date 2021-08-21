@@ -1,8 +1,13 @@
+/*
+ *  Copyright (c) 2020-2021 AtomLanguage Developers
+ *  Distributed Under The MIT License
+ */
+
 #ifndef COMMON_H
 #define COMMON_H
 
 // includes
-#include <pocketlang.h>
+#include <atomlang.h>
 #include <assert.h>
 #include <errno.h>
 #include <stdlib.h>

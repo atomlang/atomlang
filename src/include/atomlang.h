@@ -1,3 +1,8 @@
+/*
+ *  Copyright (c) 2020-2021 AtomLanguage Developers
+ *  Distributed Under The MIT License
+ */
+
 #ifndef ATOMLANG_H
 #define ATOMLANG_H
 

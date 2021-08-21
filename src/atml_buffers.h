@@ -1,3 +1,8 @@
+/*
+ *  Copyright (c) 2020-2021 AtomLanguage Developers
+ *  Distributed Under The MIT License
+ */
+
 #ifndef BUFFERS_TEMPLATE_H
 #define BUFFERS_TEMPLATE_H
 

@@ -1,8 +1,13 @@
+/*
+ *  Copyright (c) 2020-2021 AtomLanguage Developers
+ *  Distributed Under The MIT License
+ */
+
 #ifndef ATML_INTERNAL
 #define ATML_INTERNAL
 
 // includes
-#include "include/pocketlang.h"
+#include "include/atomlang.h"
 #include "atml_common.h"
 #include <assert.h>
 #include <errno.h>
