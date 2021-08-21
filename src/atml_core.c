@@ -15,49 +15,44 @@
 #include "atml_var.h"
 #include "atml_vm.h"
 
-// M_PI is non standard. The macro _USE_MATH_DEFINES defining before importing
-// <math.h> will define the constants for MSVC. But for a portable solution,
-// we're defining it ourselves if it isn't already.
 #ifndef M_PI
   #define M_PI 3.14159265358979323846
 #endif
 
 // Returns the docstring of the function, which is a static const char* defined
 // just above the function by the DEF() macro below.
-#define DOCSTRING(fn) _pk_doc_##fn
+#define DOCSTRING(fn) _ATML_doc_##fn
 
 // A macro to declare a function, with docstring, which is defined as
-// _pk_doc_<fn> = docstring; That'll used to generate function help text.
+// _ATML_doc_<fn> = docstring; That'll used to generate function help text.
 #define DEF(fn, docstring)                      \
   static const char* DOCSTRING(fn) = docstring; \
-  static void fn(PKVM* vm)
+  static void fn(ATMLVM* vm)
 
 /*****************************************************************************/
 /* CORE PUBLIC API                                                           */
 /*****************************************************************************/
 
 // Create a new module with the given [name] and returns as a Script* for
-// internal. Which will be wrapped by pkNewModule to return a pkHandle*.
-static Script* newModuleInternal(PKVM* vm, const char* name);
+// internal. Which will be wrapped by ATMLNewModule to return a ATMLHandle*.
+static Script* newModuleInternal(ATMLVM* vm, const char* name);
 
 // The internal function to add global value to a module.
-static void moduleAddGlobalInternal(PKVM* vm, Script* script,
+static void moduleAddGlobalInternal(ATMLVM* vm, Script* script,
                                     const char* name, Var value);
 
 // The internal function to add functions to a module.
-static void moduleAddFunctionInternal(PKVM* vm, Script* script,
-                                      const char* name, pkNativeFn fptr,
+static void moduleAddFunctionInternal(ATMLVM* vm, Script* script,
+                                      const char* name, ATMLNativeFn fptr,
                                       int arity, const char* docstring);
 
-// pkNewModule implementation (see pocketlang.h for description).
-PkHandle* pkNewModule(PKVM* vm, const char* name) {
+ATMLHandle* ATMLNewModule(ATMLVM* vm, const char* name) {
   Script* module = newModuleInternal(vm, name);
   return vmNewHandle(vm, VAR_OBJ(module));
 }
 
-// pkModuleAddGlobal implementation (see pocketlang.h for description).
-PK_PUBLIC void pkModuleAddGlobal(PKVM* vm, PkHandle* module,
-                                 const char* name, PkHandle* value) {
+ATML_PUBLIC void ATMLModuleAddGlobal(ATMLVM* vm, ATMLHandle* module,
+                                 const char* name, ATMLHandle* value) {
   __ASSERT(module != NULL, "Argument module was NULL.");
   __ASSERT(value != NULL, "Argument value was NULL.");
   Var scr = module->value;
@@ -66,9 +61,8 @@ PK_PUBLIC void pkModuleAddGlobal(PKVM* vm, PkHandle* module,
   moduleAddGlobalInternal(vm, (Script*)AS_OBJ(scr), name, value->value);
 }
 
-// pkModuleAddFunction implementation (see pocketlang.h for description).
-void pkModuleAddFunction(PKVM* vm, PkHandle* module, const char* name,
-                         pkNativeFn fptr, int arity) {
+void ATMLModuleAddFunction(ATMLVM* vm, ATMLHandle* module, const char* name,
+                         ATMLNativeFn fptr, int arity) {
   __ASSERT(module != NULL, "Argument module was NULL.");
   Var scr = module->value;
   __ASSERT(IS_OBJ_TYPE(scr, OBJ_SCRIPT), "Given handle is not a module");
@@ -76,7 +70,7 @@ void pkModuleAddFunction(PKVM* vm, PkHandle* module, const char* name,
                             NULL /*TODO: Public API for function docstring.*/);
 }
 
-PkHandle* pkGetFunction(PKVM* vm, PkHandle* module,
+ATMLHandle* ATMLGetFunction(ATMLVM* vm, ATMLHandle* module,
                                   const char* name) {
   __ASSERT(module != NULL, "Argument module was NULL.");
   Var scr = module->value;
@@ -137,14 +131,12 @@ do {                                                                        \
   }                                                                         \
 } while (false)
 
-// pkGetArgc implementation (see pocketlang.h for description).
-int pkGetArgc(const PKVM* vm) {
+int ATMLGetArgc(const ATMLVM* vm) {
   __ASSERT(vm->fiber != NULL, "This function can only be called at runtime.");
   return ARGC;
 }
 
-// pkCheckArgcRange implementation (see pocketlang.h for description).
-bool pkCheckArgcRange(PKVM* vm, int argc, int min, int max) {
+bool ATMLCheckArgcRange(ATMLVM* vm, int argc, int min, int max) {
   ASSERT(min <= max, "invalid argc range (min > max).");
 
   if (argc < min) {
@@ -163,16 +155,14 @@ bool pkCheckArgcRange(PKVM* vm, int argc, int min, int max) {
   return true;
 }
 
-// pkGetArg implementation (see pocketlang.h for description).
-PkVar pkGetArg(const PKVM* vm, int arg) {
+ATMLVar ATMLGetArg(const ATMLVM* vm, int arg) {
   __ASSERT(vm->fiber != NULL, "This function can only be called at runtime.");
   __ASSERT(arg > 0 || arg <= ARGC, "Invalid argument index.");
 
   return &(ARG(arg));
 }
 
-// pkGetArgBool implementation (see pocketlang.h for description).
-bool pkGetArgBool(PKVM* vm, int arg, bool* value) {
+bool ATMLGetArgBool(ATMLVM* vm, int arg, bool* value) {
   CHECK_GET_ARG_API_ERRORS();
 
   Var val = ARG(arg);
@@ -180,8 +170,7 @@ bool pkGetArgBool(PKVM* vm, int arg, bool* value) {
   return true;
 }
 
-// pkGetArgNumber implementation (see pocketlang.h for description).
-bool pkGetArgNumber(PKVM* vm, int arg, double* value) {
+bool ATMLGetArgNumber(ATMLVM* vm, int arg, double* value) {
   CHECK_GET_ARG_API_ERRORS();
 
   Var val = ARG(arg);
@@ -199,8 +188,7 @@ bool pkGetArgNumber(PKVM* vm, int arg, double* value) {
   return true;
 }
 
-// pkGetArgString implementation (see pocketlang.h for description).
-bool pkGetArgString(PKVM* vm, int arg, const char** value, uint32_t* length) {
+bool ATMLGetArgString(ATMLVM* vm, int arg, const char** value, uint32_t* length) {
   CHECK_GET_ARG_API_ERRORS();
 
   Var val = ARG(arg);
@@ -217,8 +205,7 @@ bool pkGetArgString(PKVM* vm, int arg, const char** value, uint32_t* length) {
   return true;
 }
 
-// pkGetArgInstance implementation (see pocketlang.h for description).
-bool pkGetArgInst(PKVM* vm, int arg, uint32_t id, void** value) {
+bool ATMLGetArgInst(ATMLVM* vm, int arg, uint32_t id, void** value) {
   CHECK_GET_ARG_API_ERRORS();
 
   Var val = ARG(arg);
@@ -245,77 +232,69 @@ bool pkGetArgInst(PKVM* vm, int arg, uint32_t id, void** value) {
   return true;
 }
 
-// pkGetArgValue implementation (see pocketlang.h for description).
-bool pkGetArgValue(PKVM* vm, int arg, PkVarType type, PkVar* value) {
+bool ATMLGetArgValue(ATMLVM* vm, int arg, ATMLVarType type, ATMLVar* value) {
   CHECK_GET_ARG_API_ERRORS();
 
   Var val = ARG(arg);
-  if (pkGetValueType((PkVar)&val) != type) {
+  if (ATMLGetValueType((ATMLVar)&val) != type) {
     char buff[STR_INT_BUFF_SIZE]; sprintf(buff, "%d", arg);
     VM_SET_ERROR(vm, stringFormat(vm, "Expected a $ at argument $.",
-                 getPkVarTypeName(type), buff));
+                 getATMLVarTypeName(type), buff));
     return false;
   }
 
-  *value = (PkVar)&val;
+  *value = (ATMLVar)&val;
   return true;
 }
 
-// pkReturnNull implementation (see pocketlang.h for description).
-void pkReturnNull(PKVM* vm) {
+void ATMLReturnNull(ATMLVM* vm) {
   RET(VAR_NULL);
 }
 
-// pkReturnBool implementation (see pocketlang.h for description).
-void pkReturnBool(PKVM* vm, bool value) {
+void ATMLReturnBool(ATMLVM* vm, bool value) {
   RET(VAR_BOOL(value));
 }
 
-// pkReturnNumber implementation (see pocketlang.h for description).
-void pkReturnNumber(PKVM* vm, double value) {
+void ATMLReturnNumber(ATMLVM* vm, double value) {
   RET(VAR_NUM(value));
 }
 
-// pkReturnString implementation (see pocketlang.h for description).
-void pkReturnString(PKVM* vm, const char* value) {
+void ATMLReturnString(ATMLVM* vm, const char* value) {
   RET(VAR_OBJ(newString(vm, value)));
 }
 
-// pkReturnStringLength implementation (see pocketlang.h for description).
-void pkReturnStringLength(PKVM* vm, const char* value, size_t length) {
+
+void ATMLReturnStringLength(ATMLVM* vm, const char* value, size_t length) {
   RET(VAR_OBJ(newStringLength(vm, value, (uint32_t)length)));
 }
 
-// pkReturnValue implementation (see pocketlang.h for description).
-void pkReturnValue(PKVM* vm, PkVar value) {
+void ATMLReturnValue(ATMLVM* vm, ATMLVar value) {
   RET(*(Var*)value);
 }
 
-// pkReturnHandle implementation (see pocketlang.h for description).
-void pkReturnHandle(PKVM* vm, PkHandle* handle) {
+void ATMLReturnHandle(ATMLVM* vm, ATMLHandle* handle) {
   RET(handle->value);
 }
 
-// pkReturnInstNative implementation (see pocketlang.h for description).
-void pkReturnInstNative(PKVM* vm, void* data, uint32_t id) {
+void ATMLReturnInstNative(ATMLVM* vm, void* data, uint32_t id) {
   RET(VAR_OBJ(newInstanceNative(vm, data, id)));
 }
 
-const char* pkStringGetData(const PkVar value) {
+const char* ATMLStringGetData(const ATMLVar value) {
   const Var str = (*(const Var*)value);
   __ASSERT(IS_OBJ_TYPE(str, OBJ_STRING), "Value should be of type string.");
   return ((String*)AS_OBJ(str))->data;
 }
 
-PkVar pkFiberGetReturnValue(const PkHandle* fiber) {
+ATMLVar ATMLFiberGetReturnValue(const ATMLHandle* fiber) {
   __ASSERT(fiber != NULL, "Handle fiber was NULL.");
   Var fb = fiber->value;
   __ASSERT(IS_OBJ_TYPE(fb, OBJ_FIBER), "Given handle is not a fiber");
   Fiber* _fiber = (Fiber*)AS_OBJ(fb);
-  return (PkVar)_fiber->ret;
+  return (ATMLVar)_fiber->ret;
 }
 
-bool pkFiberIsDone(const PkHandle* fiber) {
+bool ATMLFiberIsDone(const ATMLHandle* fiber) {
   __ASSERT(fiber != NULL, "Handle fiber was NULL.");
   Var fb = fiber->value;
   __ASSERT(IS_OBJ_TYPE(fb, OBJ_FIBER), "Given handle is not a fiber");
@@ -359,7 +338,7 @@ static inline bool isInteger(Var var, int64_t* value) {
 }
 
 // Check if [var] is bool/number. If not set error and return false.
-static inline bool validateNumeric(PKVM* vm, Var var, double* value,
+static inline bool validateNumeric(ATMLVM* vm, Var var, double* value,
                                    const char* name) {
   if (isNumeric(var, value)) return true;
   VM_SET_ERROR(vm, stringFormat(vm, "$ must be a numeric value.", name));
@@ -367,16 +346,14 @@ static inline bool validateNumeric(PKVM* vm, Var var, double* value,
 }
 
 // Check if [var] is 32 bit integer. If not set error and return false.
-static inline bool validateInteger(PKVM* vm, Var var, int64_t* value,
+static inline bool validateInteger(ATMLVM* vm, Var var, int64_t* value,
                                    const char* name) {
   if (isInteger(var, value)) return true;
   VM_SET_ERROR(vm, stringFormat(vm, "$ must be a whole number.", name));
   return false;
 }
 
-// Index is could be larger than 32 bit integer, but the size in pocketlang
-// limited to 32 unsigned bit integer
-static inline bool validateIndex(PKVM* vm, int64_t index, uint32_t size,
+static inline bool validateIndex(ATMLVM* vm, int64_t index, uint32_t size,
                                  const char* container) {
   if (index < 0 || size <= index) {
     VM_SET_ERROR(vm, stringFormat(vm, "$ index out of bound.", container));
@@ -388,7 +365,7 @@ static inline bool validateIndex(PKVM* vm, int64_t index, uint32_t size,
 // Check if [var] is string for argument at [arg]. If not set error and
 // return false.
 #define VALIDATE_ARG_OBJ(m_class, m_type, m_name)                            \
-  static bool validateArg##m_class(PKVM* vm, int arg, m_class** value) {     \
+  static bool validateArg##m_class(ATMLVM* vm, int arg, m_class** value) {     \
     Var var = ARG(arg);                                                      \
     ASSERT(arg > 0 && arg <= ARGC, OOPS);                                    \
     if (!IS_OBJ(var) || AS_OBJ(var)->type != m_type) {                       \
@@ -410,7 +387,7 @@ static inline bool validateIndex(PKVM* vm, int64_t index, uint32_t size,
 /*****************************************************************************/
 
 // findBuiltinFunction implementation (see core.h for description).
-int findBuiltinFunction(const PKVM* vm, const char* name, uint32_t length) {
+int findBuiltinFunction(const ATMLVM* vm, const char* name, uint32_t length) {
    for (uint32_t i = 0; i < vm->builtins_count; i++) {
      if (length == vm->builtins[i].length &&
        strncmp(name, vm->builtins[i].name, length) == 0) {
@@ -421,19 +398,19 @@ int findBuiltinFunction(const PKVM* vm, const char* name, uint32_t length) {
  }
 
 // getBuiltinFunction implementation (see core.h for description).
-Function* getBuiltinFunction(const PKVM* vm, int index) {
+Function* getBuiltinFunction(const ATMLVM* vm, int index) {
   ASSERT_INDEX((uint32_t)index, vm->builtins_count);
   return vm->builtins[index].fn;
 }
 
 // getBuiltinFunctionName implementation (see core.h for description).
-const char* getBuiltinFunctionName(const PKVM* vm, int index) {
+const char* getBuiltinFunctionName(const ATMLVM* vm, int index) {
   ASSERT_INDEX((uint32_t)index, vm->builtins_count);
   return vm->builtins[index].name;
 }
 
 // getCoreLib implementation (see core.h for description).
-Script* getCoreLib(const PKVM* vm, String* name) {
+Script* getCoreLib(const ATMLVM* vm, String* name) {
   Var lib = mapGet(vm->core_libs, VAR_OBJ(name));
   if (IS_UNDEF(lib)) return NULL;
   ASSERT(IS_OBJ_TYPE(lib, OBJ_SCRIPT), OOPS);
@@ -626,7 +603,7 @@ DEF(coreInput,
     vm->config.write_fn(vm, toString(vm, ARG(1))->data);
   }
 
-  PkStringPtr result = vm->config.read_fn(vm);
+  ATMLStringPtr result = vm->config.read_fn(vm);
   String* line = newString(vm, result.string);
   if (result.on_done) result.on_done(vm, result);
   RET(VAR_OBJ(line));
@@ -743,7 +720,7 @@ DEF(coreMapRemove,
 /*****************************************************************************/
 
 // Create a module and add it to the vm's core modules, returns the script.
-static Script* newModuleInternal(PKVM* vm, const char* name) {
+static Script* newModuleInternal(ATMLVM* vm, const char* name) {
 
   // Create a new Script for the module.
   String* _name = newString(vm, name);
@@ -770,7 +747,7 @@ static Script* newModuleInternal(PKVM* vm, const char* name) {
 
 // This will fail an assertion if a function or a global with the [name]
 // already exists in the module.
-static inline void assertModuleNameDef(PKVM* vm, Script* script,
+static inline void assertModuleNameDef(ATMLVM* vm, Script* script,
                                        const char* name) {
   // Check if function with the same name already exists.
   if (scriptGetFunc(script, name, (uint32_t)strlen(name)) != -1) {
@@ -786,7 +763,7 @@ static inline void assertModuleNameDef(PKVM* vm, Script* script,
 }
 
 // The internal function to add global value to a module.
-static void moduleAddGlobalInternal(PKVM* vm, Script* script,
+static void moduleAddGlobalInternal(ATMLVM* vm, Script* script,
                                     const char* name, Var value) {
 
   // Ensure the name isn't defined already.
@@ -797,8 +774,8 @@ static void moduleAddGlobalInternal(PKVM* vm, Script* script,
 }
 
 // An internal function to add a function to the given [script].
-static void moduleAddFunctionInternal(PKVM* vm, Script* script,
-                                      const char* name, pkNativeFn fptr,
+static void moduleAddFunctionInternal(ATMLVM* vm, Script* script,
+                                      const char* name, ATMLNativeFn fptr,
                                       int arity, const char* docstring) {
 
   // Ensure the name isn't predefined.
@@ -810,7 +787,7 @@ static void moduleAddFunctionInternal(PKVM* vm, Script* script,
   fn->arity = arity;
 }
 
-// TODO: make the below module functions as PK_DOC(name, doc);
+// TODO: make the below module functions as ATML_DOC(name, doc);
 
 // 'lang' library methods.
 // -----------------------
@@ -839,11 +816,11 @@ DEF(stdLangDisas,
   Function* fn;
   if (!validateArgFunction(vm, 1, &fn)) return;
 
-  pkByteBuffer buff;
-  pkByteBufferInit(&buff);
+  ATMLByteBuffer buff;
+  ATMLByteBufferInit(&buff);
   dumpFunctionCode(vm, fn, &buff);
   String* dump = newString(vm, (const char*)buff.data);
-  pkByteBufferClear(&buff, vm);
+  ATMLByteBufferClear(&buff, vm);
 
   RET(VAR_OBJ(dump));
 }
@@ -1131,8 +1108,8 @@ DEF(stdFiberResume,
 /* CORE INITIALIZATION                                                       */
 /*****************************************************************************/
 
-static void initializeBuiltinFN(PKVM* vm, BuiltinFn* bfn, const char* name,
-                                int length, int arity, pkNativeFn ptr,
+static void initializeBuiltinFN(ATMLVM* vm, BuiltinFn* bfn, const char* name,
+                                int length, int arity, ATMLNativeFn ptr,
                                 const char* docstring) {
   bfn->name = name;
   bfn->length = length;
@@ -1142,7 +1119,7 @@ static void initializeBuiltinFN(PKVM* vm, BuiltinFn* bfn, const char* name,
   bfn->fn->native = ptr;
 }
 
-void initializeCore(PKVM* vm) {
+void initializeCore(ATMLVM* vm) {
 
 #define INITIALIZE_BUILTIN_FN(name, fn, argc)                        \
   initializeBuiltinFN(vm, &vm->builtins[vm->builtins_count++], name, \
@@ -1211,11 +1188,6 @@ void initializeCore(PKVM* vm) {
   MODULE_ADD_FN(math, "log10", stdMathLog10,       1);
   MODULE_ADD_FN(math, "round", stdMathRound,       1);
 
-  // Note that currently it's mutable (since it's a global variable, not
-  // constant and pocketlang doesn't support constant) so the user shouldn't
-  // modify the PI, like in python.
-  // TODO: at varSetAttrib() we can detect if the user try to change an
-  // attribute of a core module and we can throw an error.
   moduleAddGlobalInternal(vm, math, "PI", VAR_NUM(M_PI));
 
   Script* fiber = newModuleInternal(vm, "Fiber");
@@ -1235,7 +1207,7 @@ void initializeCore(PKVM* vm) {
 
 #define RIGHT_OPERAND "Right operand"
 
-Var varAdd(PKVM* vm, Var v1, Var v2) {
+Var varAdd(ATMLVM* vm, Var v1, Var v2) {
   double d1, d2;
 
   if (isNumeric(v1, &d1)) {
@@ -1278,7 +1250,7 @@ Var varAdd(PKVM* vm, Var v1, Var v2) {
   return VAR_NULL;
 }
 
-Var varSubtract(PKVM* vm, Var v1, Var v2) {
+Var varSubtract(ATMLVM* vm, Var v1, Var v2) {
   double d1, d2;
 
   if (isNumeric(v1, &d1)) {
@@ -1292,7 +1264,7 @@ Var varSubtract(PKVM* vm, Var v1, Var v2) {
   return VAR_NULL;
 }
 
-Var varMultiply(PKVM* vm, Var v1, Var v2) {
+Var varMultiply(ATMLVM* vm, Var v1, Var v2) {
   double d1, d2;
 
   if (isNumeric(v1, &d1)) {
@@ -1306,7 +1278,7 @@ Var varMultiply(PKVM* vm, Var v1, Var v2) {
   return VAR_NULL;
 }
 
-Var varDivide(PKVM* vm, Var v1, Var v2) {
+Var varDivide(ATMLVM* vm, Var v1, Var v2) {
   double d1, d2;
 
   if (isNumeric(v1, &d1)) {
@@ -1320,7 +1292,7 @@ Var varDivide(PKVM* vm, Var v1, Var v2) {
   return VAR_NULL;
 }
 
-Var varModulo(PKVM* vm, Var v1, Var v2) {
+Var varModulo(ATMLVM* vm, Var v1, Var v2) {
   double d1, d2;
 
   if (isNumeric(v1, &d1)) {
@@ -1339,7 +1311,7 @@ Var varModulo(PKVM* vm, Var v1, Var v2) {
   return VAR_NULL;
 }
 
-Var varBitAnd(PKVM* vm, Var v1, Var v2) {
+Var varBitAnd(ATMLVM* vm, Var v1, Var v2) {
   int64_t i1, i2;
 
   if (isInteger(v1, &i1)) {
@@ -1353,7 +1325,7 @@ Var varBitAnd(PKVM* vm, Var v1, Var v2) {
   return VAR_NULL;
 }
 
-Var varBitOr(PKVM* vm, Var v1, Var v2) {
+Var varBitOr(ATMLVM* vm, Var v1, Var v2) {
   int64_t i1, i2;
 
   if (isInteger(v1, &i1)) {
@@ -1367,7 +1339,7 @@ Var varBitOr(PKVM* vm, Var v1, Var v2) {
   return VAR_NULL;
 }
 
-Var varBitXor(PKVM* vm, Var v1, Var v2) {
+Var varBitXor(ATMLVM* vm, Var v1, Var v2) {
   int64_t i1, i2;
 
   if (isInteger(v1, &i1)) {
@@ -1381,7 +1353,7 @@ Var varBitXor(PKVM* vm, Var v1, Var v2) {
   return VAR_NULL;
 }
 
-Var varBitLshift(PKVM* vm, Var v1, Var v2) {
+Var varBitLshift(ATMLVM* vm, Var v1, Var v2) {
   int64_t i1, i2;
 
   if (isInteger(v1, &i1)) {
@@ -1395,7 +1367,7 @@ Var varBitLshift(PKVM* vm, Var v1, Var v2) {
   return VAR_NULL;
 }
 
-Var varBitRshift(PKVM* vm, Var v1, Var v2) {
+Var varBitRshift(ATMLVM* vm, Var v1, Var v2) {
   int64_t i1, i2;
 
   if (isInteger(v1, &i1)) {
@@ -1409,7 +1381,7 @@ Var varBitRshift(PKVM* vm, Var v1, Var v2) {
   return VAR_NULL;
 }
 
-Var varBitNot(PKVM* vm, Var v) {
+Var varBitNot(ATMLVM* vm, Var v) {
   int64_t i;
   if (!validateInteger(vm, v, &i, "Unary operand")) return VAR_NULL;
   return VAR_NUM((double)(~i));
@@ -1440,7 +1412,7 @@ bool varLesser(Var v1, Var v2) {
 #undef RIGHT_OPERAND
 #undef UNSUPPORTED_OPERAND_TYPES
 
-bool varContains(PKVM* vm, Var elem, Var container) {
+bool varContains(ATMLVM* vm, Var elem, Var container) {
   if (!IS_OBJ(container)) {
     VM_SET_ERROR(vm, stringFormat(vm, "'$' is not iterable.",
                  varTypeName(container)));
@@ -1496,7 +1468,7 @@ bool varContains(PKVM* vm, Var elem, Var container) {
   VM_SET_ERROR(vm, stringFormat(vm, "'$' object has no attribute named '$'", \
                                 varTypeName(on), attrib->data))
 
-Var varGetAttrib(PKVM* vm, Var on, String* attrib) {
+Var varGetAttrib(ATMLVM* vm, Var on, String* attrib) {
 
   if (!IS_OBJ(on)) {
     VM_SET_ERROR(vm, stringFormat(vm, "$ type is not subscriptable.",
@@ -1564,10 +1536,6 @@ Var varGetAttrib(PKVM* vm, Var on, String* attrib) {
 
         case CHECK_HASH("as_list", 0x1562c22):
           return VAR_OBJ(rangeAsList(vm, range));
-
-        // We can't use 'start', 'end' since 'end' in pocketlang is a
-        // keyword. Also we can't use 'from', 'to' since 'from' is a keyword
-        // too. So, we're using 'first' and 'last' to access the range limits.
 
         case CHECK_HASH("first", 0x4881d841):
           return VAR_NUM(range->from);
@@ -1669,7 +1637,7 @@ Var varGetAttrib(PKVM* vm, Var on, String* attrib) {
   UNREACHABLE();
 }
 
-void varSetAttrib(PKVM* vm, Var on, String* attrib, Var value) {
+void varSetAttrib(ATMLVM* vm, Var on, String* attrib, Var value) {
 
 #define ATTRIB_IMMUTABLE(name)                                                \
 do {                                                                          \
@@ -1787,7 +1755,7 @@ do {                                                                          \
 
 #undef ERR_NO_ATTRIB
 
-Var varGetSubscript(PKVM* vm, Var on, Var key) {
+Var varGetSubscript(ATMLVM* vm, Var on, Var key) {
   if (!IS_OBJ(on)) {
     VM_SET_ERROR(vm, stringFormat(vm, "$ type is not subscriptable.",
                                   varTypeName(on)));
@@ -1813,7 +1781,7 @@ Var varGetSubscript(PKVM* vm, Var on, Var key) {
     case OBJ_LIST:
     {
       int64_t index;
-      pkVarBuffer* elems = &((List*)obj)->elements;
+      ATMLVarBuffer* elems = &((List*)obj)->elements;
       if (!validateInteger(vm, key, &index, "List index")) {
         return VAR_NULL;
       }
@@ -1857,7 +1825,7 @@ Var varGetSubscript(PKVM* vm, Var on, Var key) {
   UNREACHABLE();
 }
 
-void varsetSubscript(PKVM* vm, Var on, Var key, Var value) {
+void varsetSubscript(ATMLVM* vm, Var on, Var key, Var value) {
   if (!IS_OBJ(on)) {
     VM_SET_ERROR(vm, stringFormat(vm, "$ type is not subscriptable.",
                                   varTypeName(on)));
@@ -1873,7 +1841,7 @@ void varsetSubscript(PKVM* vm, Var on, Var key, Var value) {
     case OBJ_LIST:
     {
       int64_t index;
-      pkVarBuffer* elems = &((List*)obj)->elements;
+      ATMLVarBuffer* elems = &((List*)obj)->elements;
       if (!validateInteger(vm, key, &index, "List index")) return;
       if (!validateIndex(vm, index, elems->count, "List")) return;
       elems->data[index] = value;
