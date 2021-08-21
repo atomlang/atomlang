@@ -1,5 +1,5 @@
 #ifndef ATOMLANG_H
-#define POCKETLANG_H
+#define ATOMLANG_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -101,14 +101,9 @@ typedef void (*ATMLWriteFn) (ATMLVM* vm, const char* text);
 // contain a line ending (\n or \r\n).
 typedef ATMLStringPtr (*ATMLReadFn) (ATMLVM* vm);
 
-// A function callback, that'll be called when a native instance (wrapper) is
-// freed by by the garbage collector, to indicate that pocketlang is done with
 // the native instance.
 typedef void (*ATMLInstFreeFn) (ATMLVM* vm, void* instance, uint32_t id);
 
-// A function callback to get the name of the native instance from pocketlang,
-// using it's [id]. The returned string won't be copied by pocketlang so it's
-// expected to be alived since the instance is alive and recomended to return
 // a C literal string.
 typedef const char* (*ATMLInstNameFn) (uint32_t id);
 
@@ -145,13 +140,6 @@ typedef ATMLStringPtr (*ATMLResolvePathFn) (ATMLVM* vm, const char* from,
 // to indicate if it's failed to load the script.
 typedef ATMLStringPtr (*ATMLLoadScriptFn) (ATMLVM* vm, const char* path);
 
-/*****************************************************************************/
-/* POCKETLANG PUBLIC API                                                     */
-/*****************************************************************************/
-
-// Create a new ATMLConfiguration with the default values and return it.
-// Override those default configuration to adopt to another hosting
-// application.
 ATML_PUBLIC ATMLConfiguration ATMLNewConfiguration(void);
 
 // Create a new ATMLCompilerOptions with the default values and return it.
@@ -227,10 +215,6 @@ ATML_PUBLIC ATMLResult ATMLRunFiber(ATMLVM* vm, ATMLHandle* fiber,
 // It'll returns it's run status result (success or failure) if you need the
 // yielded or returned value use the ATMLFiberGetReturnValue() function.
 ATML_PUBLIC ATMLResult ATMLResumeFiber(ATMLVM* vm, ATMLHandle* fiber, ATMLVar value);
-
-/*****************************************************************************/
-/* POCKETLANG PUBLIC TYPE DEFINES                                            */
-/*****************************************************************************/
 
 // A string pointer wrapper to pass c string between host application and
 // pocket VM. With a on_done() callback to clean it when the pocket VM is done
@@ -328,10 +312,6 @@ ATML_PUBLIC ATMLVar ATMLFiberGetReturnValue(const ATMLHandle* fiber);
 // anymore.
 ATML_PUBLIC bool ATMLFiberIsDone(const ATMLHandle* fiber);
 
-/*****************************************************************************/
-/* POCKETLANG TYPE FUNCTIONS                                                 */
-/*****************************************************************************/
-
 // The functions below will allocate a new object and return's it's value
 // wrapped around a handler.
 
@@ -366,4 +346,4 @@ ATML_PUBLIC ATMLHandle* ATMLNewInstNative(ATMLVM* vm, void* data, uint32_t id);
 } // extern "C"
 #endif
 
-#endif // POCKETLANG_H
+#endif //
