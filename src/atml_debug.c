@@ -4,12 +4,12 @@
  */
 
 
-#include "ATML_debug.h"
-
+// includes
+#include "atml_debug.h"
 #include <stdio.h>
-#include "ATML_core.h"
-#include "ATML_var.h"
-#include "ATML_vm.h"
+#include "atml_core.h"
+#include "atml_var.h"
+#include "atml_vm.h"
 
 static const char* op_names[] = {
   #define OPCODE(name, params, stack) #name,
