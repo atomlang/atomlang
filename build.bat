@@ -94,7 +94,7 @@ if "%debug_build%"=="false" (
 )
 
 if "%shared_lib%"=="true" (
-    set addnl_cdefines=%addnl_cdefines% /DPK_DLL /DPK_COMPILE
+    set addnl_cdefines=%addnl_cdefines% /Datml_DLL /Datml_COMPILE
 )
 
 :: Make intermediate folders.
@@ -114,17 +114,17 @@ if errorlevel 1 goto :FAIL
 
 :: If compiling shared lib, jump pass the lib/cli binaries.
 if "%shared_lib%"=="true" (
-  set pklib=..\bin\atomlang-dll.lib
+  set atmllib=..\bin\atomlang-dll.lib
 ) else (
-  set pklib=..\bin\atomlang.lib
+  set atmllib=..\bin\atomlang.lib
 )
 
 :: If compiling shared lib, jump pass the lib/cli binaries.
 if "%shared_lib%"=="true" goto :SHARED
-lib /nologo %addnl_linkflags% /OUT:%pklib% *.obj
+lib /nologo %addnl_linkflags% /OUT:%atmllib% *.obj
 goto :SRC_END
 :SHARED
-link /nologo /dll /out:..\bin\atomlang.dll /implib:%pklib% *.obj
+link /nologo /dll /out:..\bin\atomlang.dll /implib:%atmllib% *.obj
 :SRC_END
 if errorlevel 1 goto :FAIL
 
@@ -134,7 +134,7 @@ cl /nologo /c %addnl_cdefines% %addnl_cflags% /I%root_dir%src\include\ %root_dir
 if errorlevel 1 goto :FAIL
 
 :: Compile the cli executable.
-cl /nologo %addnl_cdefines% *.obj %pklib% /Fe..\bin\atomlang.exe
+cl /nologo %addnl_cdefines% *.obj %atmllib% /Fe..\bin\atomlang.exe
 if errorlevel 1 goto :FAIL
 
 :: Navigate to the build directory.

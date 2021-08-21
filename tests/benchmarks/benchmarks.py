@@ -83,7 +83,7 @@ def update_interpreters():
   print_title("CHECKING FOR INTERPRETERS")
   global INTERPRETERS
   order = 0
-  INTERPRETERS['.pk']   = _find_interp('atomlang', atomlang, order); order+=1
+  INTERPRETERS['.atml']   = _find_interp('atomlang', atomlang, order); order+=1
   INTERPRETERS['.wren'] = _find_interp('wren',       'wren', order); order+=1
   INTERPRETERS['.py']   = _find_interp('python',     python, order); order+=1
   INTERPRETERS['.rb']   = _find_interp('ruby',       'ruby', order); order+=1
