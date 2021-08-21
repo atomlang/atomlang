@@ -1,0 +1,47 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+
+  style-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run check.py script.
+        run: |
+          python3 tests/check.py
+  
+  linux-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run the Makefile.
+        run: |
+          make all
+      - name: Run tests.
+        run: |
+          python3 tests/tests.py
+
+  windows-build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run build batch script.
+        run: |
+          cmd /c build.bat
+      - name: Run tests.
+        run: |
+          python3 tests/tests.py
+
+  macos-build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run the Makefile.
+        run: |
+          make all
+      - name: Run tests.
+        run: |
+          python3 tests/tests.py
+
+
