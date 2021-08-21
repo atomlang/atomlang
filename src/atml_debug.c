@@ -13,7 +13,7 @@
 
 static const char* op_names[] = {
   #define OPCODE(name, params, stack) #name,
-  #include "ATML_opcodes.h"
+  #include "atml_opcodes.h"
   #undef OPCODE
 };
 
