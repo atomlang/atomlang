@@ -26,57 +26,6 @@
   typedef struct Var Var;
 #endif
 
-/**
- * The IEEE 754 double precision float bit representation.
- *
- * 1 Sign bit
- * | 11 Exponent bits
- * | |          52 Mantissa (i.e. fraction values) bits
- * | |          |
- * S[Exponent-][Mantissa------------------------------------------]
- *
- * if all bits of the exponent are set it's a NaN ("Not a Number") value.
- *
- *  v~~~~~~~~~~ NaN value
- * -11111111111----------------------------------------------------
- *
- * We define a our variant \ref var as an unsigned 64 bit integer (we treat it
- * like a bit array) if the exponent bits were not set, just reinterpret it as
- * a IEEE 754 double precision 64 bit number. Other wise we there are a lot of
- * different combination of bits we can use for our custom tagging, this method
- * is called NaN-Tagging.
- *
- * There are two kinds of NaN values "signalling" and "quiet". The first one is
- * intended to halt the execution but the second one is to continue the
- * execution quietly. We get the quiet NaN by setting the highest mantissa bit.
- *
- *             v~Highest mantissa bit
- * -[NaN      ]1---------------------------------------------------
- *
- * if sign bit set, it's a heap allocated pointer.
- * |             these 2 bits are type tags representing 8 different types
- * |             vv
- * S[NaN      ]1cXX------------------------------------------------
- *              |  ^~~~~~~~ 48 bits to represent the value (51 for pointer)
- *              '- if this (const) bit set, it's a constant.
- *
- * On a 32-bit machine a pointer size is 32 and on a 64-bit machine actually 48
- * bits are used for pointers. Ta-da, now we have double precision number,
- * primitives, pointers all inside a 64 bit sequence and for numbers it doesn't
- * require any bit mask operations, which means math on the var is now even
- * faster.
- *
- * our custom 2 bits type tagging
- * c00        : NULL
- * c01 ...  0 : UNDEF  (used in unused map keys)
- *     ...  1 : VOID   (void function return void not null)
- *     ... 10 : FALSE
- *     ... 11 : TRUE
- * c10        : INTEGER
- * |
- * '-- c is const bit.
- *
- */
 
 #if VAR_NAN_TAGGING
 
