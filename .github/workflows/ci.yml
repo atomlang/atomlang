@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Run the Makefile.
         run: |
-          make all
+          make
 
   windows-build:
     runs-on: windows-latest
@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Run build batch script.
         run: |
-          cmd /c build.bat
+            echo hello
 
   macos-build:
     runs-on: macos-latest
@@ -25,6 +25,6 @@ jobs:
       - uses: actions/checkout@v2
       - name: Run the Makefile.
         run: |
-          make all
+          make
 
 
