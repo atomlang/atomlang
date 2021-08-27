@@ -10,6 +10,9 @@ Official Atom Language Repo
 
 - A Programming Language Built In C
 
-# Contributors:
-- [NukeWilliams](https://github.com/NukeWilliams) (Author)
-- [krshpranav](https://github.com/krishpranav) (Contributor)
+## Contributors
+### Author: [NukeWilliams](https://github.com/NukeWilliams)
+<br>
+<a href="https://github.com/pranaOS/pranaOS/graphs/contributors">
+  <img src="https://contributors-img.web.app/image?repo=atomlang/atomlang" />
+</a>
