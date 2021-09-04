@@ -101,7 +101,7 @@ gnode_t *gnode2class (gnode_t *node, bool *isextern) {
     }
     else if (NODE_ISA(node, NODE_VARIABLE)) {
         gnode_var_t *var = (gnode_var_t *)node;
-        const char *class_manifest_type = gravity_class_class->identifier;
+        const char *class_manifest_type = atomlang_class_class->identifier;
         if ((var->annotation_type) && (string_cmp(var->annotation_type, class_manifest_type) == 0) && (NODE_ISA_CLASS(var->expr))) return var->expr;
         
         gnode_variable_decl_t *vdecl = var->vdecl;
