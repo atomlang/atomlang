@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef CWK_LIBRARY_H
-#define CWK_LIBRARY_H
-
 #include <stdbool.h>
 #include <stddef.h>
 
@@ -492,6 +489,4 @@ extern "C"
 
 #ifdef __cplusplus
 } // extern "C"
-#endif
-
 #endif
