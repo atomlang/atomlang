@@ -1,14 +1,7 @@
-/*
- *  Copyright (c) 2020-2021 Thakee Nathees
- *  Distributed Under The MIT License
- */
-
 #include "utils.h"
 
-// The factor by which a buffer will grow when it's capacity reached.
 #define GROW_FACTOR 2
 
-// The initial minimum capacity of a buffer to allocate.
 #define MIN_CAPACITY 8
 
 static inline int powerOf2Ceil(int n) {
@@ -21,10 +14,6 @@ static inline int powerOf2Ceil(int n) {
   n++;
   return n;
 }
-
-/*****************************************************************************/
-/* BYTE BUFFER IMPLEMENTATION                                                */
-/*****************************************************************************/
 
 void byteBufferInit(ByteBuffer* buffer) {
   buffer->data = NULL;
