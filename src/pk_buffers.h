@@ -1,21 +1,6 @@
-/*
- *  Copyright (c) 2020-2021 Thakee Nathees
- *  Distributed Under The MIT License
- */
-
-#ifndef BUFFERS_TEMPLATE_H
-#define BUFFERS_TEMPLATE_H
+#pragma once
 
 #include "pk_internal.h"
-
-// The macro 'DECLARE_BUFFER()' emulate the C++ template to declare and define
-// different types of buffer objects.
-
-// A buffer of type 'T' will contain a heap allocated array of 'T' with the
-// capacity of 'Tbuffer.capacity' as 'T* Tbuffer.data'. When the capacity is
-// filled with 'T' values (ie. Tbuffer.count == Tbuffer.capacity) the buffer's
-// internal data array will be reallocate to a capacity of 'GROW_FACTOR' times
-// it's last capacity.
 
 #define DECLARE_BUFFER(m_name, m_type)                                        \
   typedef struct {                                                            \
@@ -98,5 +83,3 @@
            other->count * sizeof(m_type));                                    \
     self->count += other->count;                                              \
   }
-
-#endif // BUFFERS_TEMPLATE_H

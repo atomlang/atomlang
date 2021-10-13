@@ -1,10 +1,4 @@
-/*
- *  Copyright (c) 2020-2021 Thakee Nathees
- *  Distributed Under The MIT License
- */
-
-#ifndef PK_INTERNAL
-#define PK_INTERNAL
+#pragma once
 
 #include "include/atomlang.h"
 
@@ -80,5 +74,3 @@
 
 //
 #define CHECK_HASH(name, hash) hash
-
-#endif // PK_INTERNAL

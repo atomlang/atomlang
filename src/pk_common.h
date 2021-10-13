@@ -1,14 +1,4 @@
-/*
- *  Copyright (c) 2020-2021 Thakee Nathees
- *  Distributed Under The MIT License
- */
-
-// A collection of reusable macros that atomlang use. This file doesn't have
-// any dependencies, you can just drag and drop this file in your project if
-// you want to use these macros.
-
-#ifndef PK_COMMON_H
-#define PK_COMMON_H
+#pragma once
 
 #ifndef __has_builtin
   #define __has_builtin(x) 0
@@ -149,5 +139,3 @@
 // +  2 for '0b' prefix
 // +  1 for null byte '\0'
 #define STR_BIN_BUFF_SIZE 68
-
-#endif //PK_COMMON_H

@@ -1,10 +1,4 @@
-/*
- *  Copyright (c) 2020-2021 Thakee Nathees
- *  Distributed Under The MIT License
- */
-
-#ifndef VAR_H
-#define VAR_H
+#pragma once
 
 #include "pk_buffers.h"
 #include "pk_internal.h"
@@ -651,5 +645,3 @@ String * toRepr(PKVM * vm, const Var value);
 
 // Returns the truthy value of the var.
 bool toBool(Var v);
-
-#endif // VAR_H

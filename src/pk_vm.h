@@ -1,10 +1,4 @@
-/*
- *  Copyright (c) 2021 Thakee Nathees
- *  Distributed Under The MIT License
- */
-
-#ifndef VM_H
-#define VM_H
+#pragma once
 
 #include "pk_compiler.h"
 #include "pk_internal.h"
@@ -211,5 +205,3 @@ bool vmSwitchFiber(PKVM* vm, Fiber* fiber, Var* value);
 // Yield from the current fiber. If the [value] isn't NULL it'll set it as the
 // yield value.
 void vmYieldFiber(PKVM* vm, Var* value);
-
-#endif // VM_H

@@ -1,10 +1,4 @@
-/*
- *  Copyright (c) 2020-2021 Thakee Nathees
- *  Distributed Under The MIT License
- */
-
-#ifndef COMPILER_H
-#define COMPILER_H
+#pragma once
 
 #include "pk_internal.h"
 #include "pk_var.h"
@@ -36,5 +30,3 @@ PkResult compile(PKVM* vm, Script* script, const char* source,
 // Mark the heap allocated objects of the compiler at the garbage collection
 // called at the marking phase of vmCollectGarbage().
 void compilerMarkObjects(PKVM* vm, Compiler* compiler);
-
-#endif // COMPILER_H

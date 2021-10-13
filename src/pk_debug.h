@@ -1,10 +1,4 @@
-/*
- *  Copyright (c) 2020-2021 Thakee Nathees
- *  Distributed Under The MIT License
- */
-
-#ifndef DEBUG_H
-#define DEBUG_H
+#pragma once 
 
 #include "pk_internal.h"
 #include "pk_var.h"
@@ -22,5 +16,3 @@ void dumpGlobalValues(PKVM* vm);
 
 // Dump the current (top most) stack call frame.
 void dumpStackFrame(PKVM* vm);
-
-#endif // DEBUG_H

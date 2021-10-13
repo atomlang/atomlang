@@ -1,10 +1,4 @@
-/*
- *  Copyright (c) 2020-2021 Thakee Nathees
- *  Distributed Under The MIT License
- */
-
-#ifndef CORE_H
-#define CORE_H
+#pragma once
 
 #include "pk_internal.h"
 #include "pk_var.h"
@@ -61,5 +55,3 @@ Var varGetSubscript(PKVM* vm, Var on, Var key);
 
 // Set subscript [value] with the [key] (ie. on[key] = value).
 void varsetSubscript(PKVM* vm, Var on, Var key, Var value);
-
-#endif // CORE_H

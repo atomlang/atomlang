@@ -1,20 +1,5 @@
-/*
- *  Copyright (c) 2020-2021 Thakee Nathees
- *  Distributed Under The MIT License
- */
+#pragma once 
 
-// Opcodes X macro (http://en.wikipedia.org/wiki/X_Macro) should be included
-// in the source where it'll be used. Required to define the following...
-//
-// #define OPCODE(name, params, stack)
-// #include "opcodes.h"
-//
-// first parameter is the opcode name, 2nd will be the size of the parameter
-// in bytes 3 one is how many stack slots it'll take after executing the
-// instruction.
-
-// Load the constant at index [arg] from the script's literals.
-// params: 2 byte (uint16_t) index value.
 OPCODE(PUSH_CONSTANT, 2, 1)
 
 // Push null on the stack.
