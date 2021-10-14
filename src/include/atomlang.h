@@ -1,10 +1,4 @@
-/*
- *  Copyright (c) 2020-2021 Thakee Nathees
- *  Distributed Under The MIT License
- */
-
-#ifndef ATOMLANG_H
-#define ATOMLANG_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -444,5 +438,3 @@ PK_PUBLIC PkHandle* pkNewInstNative(PKVM* vm, void* data, uint32_t id);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
-#endif // ATOMLANG_H
